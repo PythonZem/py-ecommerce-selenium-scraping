@@ -18,8 +18,14 @@ BASE_URL = "https://webscraper.io/"
 ENDPOINTS_URL = {
     "home": urljoin(BASE_URL, "test-sites/e-commerce/more/"),
     "computers": urljoin(BASE_URL, "/test-sites/e-commerce/more/computers/"),
-    "laptops": urljoin(BASE_URL, "/test-sites/e-commerce/more/computers/laptops"),
-    "tablets": urljoin(BASE_URL, "/test-sites/e-commerce/more/computers/tablets"),
+    "laptops": urljoin(
+        BASE_URL,
+        "/test-sites/e-commerce/more/computers/laptops"
+    ),
+    "tablets": urljoin(
+        BASE_URL,
+        "/test-sites/e-commerce/more/computers/tablets"
+    ),
     "phones": urljoin(BASE_URL, "/test-sites/e-commerce/more/phones"),
     "touch": urljoin(BASE_URL, "/test-sites/e-commerce/more/phones/touch")
 
@@ -39,7 +45,7 @@ class Product:
 PRODUCT_FIELDS = [filed.name for filed in dataclasses.fields(Product)]
 
 
-def parse_single_product(product: WebElement):
+def parse_single_product(product: WebElement) -> Product:
 
     return Product(
         title=product.find_element(
@@ -72,7 +78,7 @@ def get_driver() -> WebDriver:
     return driver
 
 
-def accept_cookies(driver: WebElement):
+def accept_cookies(driver: WebDriver) -> None:
     cookies = driver.find_elements(By.CLASS_NAME, "acceptCookies")
     if cookies:
         WebDriverWait(driver, 10).until(
@@ -91,7 +97,7 @@ def get_page_all_products(url: str) -> List[Product]:
         return [parse_single_product(products) for products in products]
 
 
-def get_more_products(driver) -> None:
+def get_more_products(driver: WebDriver) -> None:
     while True:
         try:
             scroller_button = driver.find_element(
@@ -110,7 +116,13 @@ def write_products_to_csv(filename: str, products: [Product]) -> None:
     with open(f"{filename}.csv", "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(PRODUCT_FIELDS)
-        writer.writerows([dataclasses.astuple(product) for product in products])
+        writer.writerows(
+            [
+                dataclasses.astuple(product)
+                for product
+                in products
+            ]
+        )
 
 
 def get_all_products() -> None:
